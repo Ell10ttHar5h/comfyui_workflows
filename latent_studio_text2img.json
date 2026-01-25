@@ -1,0 +1,423 @@
+{
+  "name": "latent_studio_text2img",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "534728f1-23e2-4d0c-aace-3a393f978f5b",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -304,
+        72
+      ],
+      "id": "5aea89d2-bfc4-4168-b9af-d63cb136659f",
+      "name": "Webhook",
+      "webhookId": "534728f1-23e2-4d0c-aace-3a393f978f5b"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2384,
+        -48
+      ],
+      "id": "fedc37e0-3508-4009-8431-a476196ecdc5",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "operation": "fromJson",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        592,
+        72
+      ],
+      "id": "393f1572-2ad7-4160-814c-18366245dc60",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:8188/prompt",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "prompt",
+              "value": "={{ $json.data }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1040,
+        72
+      ],
+      "id": "aa089721-75a0-45f6-a26d-93c6214d1686",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "fileSelector": "E:/projects/ai/comfyui_workflows/api/flux_schnell_full_text_to_image.json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        368,
+        72
+      ],
+      "id": "15197e68-22cc-4853-8f62-a6c11cfb60dc",
+      "name": "flux_schnell"
+    },
+    {
+      "parameters": {
+        "url": "http://127.0.0.1:8188/queue",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1264,
+        72
+      ],
+      "id": "3786e5a1-40cd-4db1-9bbd-a8b81623821c",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "45c7f52a-8d33-4789-bf63-870e903f05d2",
+              "leftValue": "={{ $json.queue_running[0][2][\"41\"].inputs.t5xxl }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1488,
+        0
+      ],
+      "id": "299ef9d4-d230-4283-b52d-d1803748ce0d",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1712,
+        168
+      ],
+      "id": "b41df97d-58a2-4228-ab52-6d9604606780",
+      "name": "Wait",
+      "webhookId": "ce93b0f3-ae98-4966-ac30-c0406e64bc91"
+    },
+    {
+      "parameters": {
+        "fileSelector": "=E:/projects/ai/comfyui_workflows/output/{{ $('flux_schnell_mapping').item.json.data['9'].inputs.filename_prefix }}_00001_.png",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        1936,
+        -48
+      ],
+      "id": "1f8b9fb2-0023-4c5f-8fc9-854cac60a0a5",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "destinationKey": "image",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        2160,
+        -48
+      ],
+      "id": "bfd01d10-4993-49ca-998c-30a06cb85a2a",
+      "name": "Extract from File1"
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1712,
+        -48
+      ],
+      "id": "c3fe714a-dec4-4d62-8781-8b39852f95c0",
+      "name": "Wait1",
+      "webhookId": "7735d375-aa7c-4b60-a14f-bb6fc5542e1f"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        72
+      ],
+      "id": "67f7bbbe-5a95-4f03-a788-4616ac3fbe3c",
+      "name": "Date & Time"
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $json.currentDate }}",
+        "format": "x",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        144,
+        72
+      ],
+      "id": "fc5440cb-7306-40c6-a74c-422667dcd438",
+      "name": "unix_ts"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bb0260f5-9563-44dc-bd58-59b9f8e6613b",
+              "name": "data[\"41\"].inputs.t5xxl",
+              "value": "={{ $('Webhook').item.json.query.prompt }}",
+              "type": "string"
+            },
+            {
+              "id": "8218ad7c-a187-4fd7-b1cd-0d51b0618091",
+              "name": "data[\"31\"].inputs.seed",
+              "value": 46456400000007890,
+              "type": "number"
+            },
+            {
+              "id": "659cea2f-1832-4c57-bca0-83f2bae6feb4",
+              "name": "data[\"9\"].inputs.filename_prefix",
+              "value": "=latent_studio/images/{{ $('Extract from File').item.json.data[\"9\"].inputs.filename_prefix}}{{ $('unix_ts').item.json.formattedDate }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        816,
+        72
+      ],
+      "id": "3e961d10-c709-41ab-8cad-03a4ecf04b3c",
+      "name": "flux_schnell_mapping"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Date & Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "flux_schnell_mapping",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "flux_schnell": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Extract from File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "main": [
+        [
+          {
+            "node": "unix_ts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "unix_ts": {
+      "main": [
+        [
+          {
+            "node": "flux_schnell",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "flux_schnell_mapping": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "dc0632b4-13a9-4999-90f9-68fa6feaae3a",
+  "meta": {
+    "instanceId": "63ae5b4c70b224fb791221fdd388ca8a66d3ddeb95fb19ac6a7f7a96c0656790"
+  },
+  "id": "y5EOU9TMcaGXefNn",
+  "tags": []
+}
